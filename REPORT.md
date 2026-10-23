@@ -103,7 +103,7 @@ The "taste" skill is not registered in this workspace. I followed the copy insta
 - **Idea:** the full stop in the "Vurgn." logo becomes the answer. A customer's question (a large "?") resolves into the logo's violet full stop, and the chapter headings end with a full stop.
 - **Live element:** the hero's AI-chat tile cycles through three customer questions (clinic, restaurant, property) answered with "your business". It is CSS only, and reduced motion shows the first question.
 - **Redraws and substitutions, with reasons:**
-  - **Type:** the dealt Cabinet Grotesk, and the redraw Pilcrow Rounded, are Fontshare-only. The brief requires @fontsource, so I used the library's `bricolage-contrast` system: Bricolage Grotesque, self-hosted, one variable `wght` latin file of 41 KB, preloaded. The optical-size axis was skipped to save 36 KB.
+  - **Type:** the dealt Cabinet Grotesk, and the redraw Pilcrow Rounded, are Fontshare-only. The brief requires @fontsource, so I used the library's `bricolage-contrast` system: Bricolage Grotesque, self-hosted, one variable `wght` latin file of 41 KB. The optical-size axis was skipped to save 36 KB. The font is not preloaded; see §7.
   - **Hero:** the blueprint wants four photographs in the mosaic. These were drawn in CSS/SVG as the brief asks.
   - **About section:** team portraits replaced first by a two-column highlighted statement. After client feedback (it read as a wall of text) it is now a wash panel with the case and the consultation button, beside the four differentiators as a 2×2 list of headed statements. Each title ends in the logo's violet full stop.
   - **Proof section:** client logos replaced by stacked folders, because there are no clients to show yet.
@@ -128,6 +128,7 @@ The "taste" skill is not registered in this workspace. I followed the copy insta
 - **Copy marking:** marked DRAFT in the content file (`copyStatus: 'draft'` plus a header note), not with a visible banner on the page.
 - **Industries list:** the "Who we work with" tile uses only the sectors the current site already names.
 - **Logo:** cropped from the live site's PNG, not redrawn. The footer uses it at large size with `mix-blend-mode: multiply`.
+- **No font preload (deviation from the brief):** on the live GitHub Pages site, Chrome treated the preloaded font as render-blocking and held the first paint for about 2 s even though the font had arrived. PageSpeed mobile Speed Index was 4.4 s (Performance 97). Without the preload, live runs score Performance 100, Speed Index 1.3–1.6 s, LCP 1.0–1.2 s and CLS 0.002 (font swap onto the size-matched fallback).
 - **Pinned Astro 7.4.1:** 7.4.2 needs Node 22.23.4, and this machine has 22.23.3.
 
 ## 8. Not verified, or needs the client
