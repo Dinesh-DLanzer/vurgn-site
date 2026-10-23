@@ -1,0 +1,326 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import HeroVisual from '../components/HeroVisual.astro';
+import Button from '../components/Button.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import ProcessStep from '../components/ProcessStep.astro';
+import ProofFolder from '../components/ProofFolder.astro';
+import CTABand from '../components/CTABand.astro';
+import FAQ from '../components/FAQ';
+import ContactForm from '../components/ContactForm';
+import { home, contact, serviceOptions } from '../content/home';
+
+const site = 'https://vurgn.com/';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${site}#organization`,
+      name: 'Vurgn',
+      url: site,
+      logo: `${site}vurgn-logo.png`,
+      email: contact.email,
+      telephone: '+91-84484-56819',
+      sameAs: [contact.instagram],
+      contactPoint: { '@type': 'ContactPoint', contactType: 'sales', email: contact.email, telephone: '+91-84484-56819' },
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${site}#faq`,
+      mainEntity: home.faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.question,
+        acceptedAnswer: { '@type': 'Answer', text: f.answer },
+      })),
+    },
+  ],
+};
+
+// Author the headline's two lines (masked reveal needs one element per line): break at the space nearest the middle.
+const words = home.hero.heading.split(' ');
+let split = 1;
+for (let i = 1, best = Infinity; i < words.length; i++) {
+  const diff = Math.abs(words.slice(0, i).join(' ').length - words.slice(i).join(' ').length);
+  if (diff < best) [best, split] = [diff, i];
+}
+const lines = [words.slice(0, split).join(' '), words.slice(split).join(' ')];
+
+const serviceFields = ['deep', 'primary', 'wash', 'paper'] as const;
+const stepFields = ['primary', 'violet', 'lavender', 'wash'] as const;
+const folders = [
+  { field: 'paper', tab: 'primary' },
+  { field: 'lavender', tab: 'deep' },
+  { field: 'deep', tab: 'violet' },
+] as const;
+---
+
+<Base title={home.seo.title} description={home.seo.description} ogImageAlt={home.seo.ogImageAlt} jsonLd={jsonLd}>
+  <Header />
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <HeroVisual label={home.hero.visualLabel} />
+      <div class="wrap hero__copy">
+        <h1 id="hero-title" class="display hero__title">
+          {lines.map((line, i) => <><span class="line"><span style={`--i:${i}`}>{line}</span></span>{' '}</>)}
+        </h1>
+        <div class="hero__aside">
+          <p class="lead hero__lead">{home.hero.subheading}</p>
+          <div class="hero__actions">
+            <Button href={home.hero.primaryCta.href} arrow>{home.hero.primaryCta.label}</Button>
+            <Button href={home.hero.secondaryCta.href} variant="secondary">{home.hero.secondaryCta.label}</Button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="services" class="chapter" data-field="lavender" aria-labelledby="services-heading">
+      <div class="wrap services">
+        <div class="tile services__head" data-field="wash">
+          <SectionHeading id="services-heading">{home.servicesSection.heading}</SectionHeading>
+        </div>
+        {home.services.map((service, i) => (
+          <ServiceCard service={service} field={serviceFields[i]} size={i === 0 ? 'large' : 'small'} index={i} />
+        ))}
+        <div class="tile services__audience" data-field="paper" data-reveal>
+          <h3 class="lead">{home.servicesSection.audienceHeading}</h3>
+          <ul role="list" class="audience">
+            {home.servicesSection.audience.map((a) => <li>{a}</li>)}
+          </ul>
+          <a class="link audience__link" href={home.servicesSection.audienceLink.href}>{home.servicesSection.audienceLink.label}</a>
+        </div>
+        <div class="tile services__help" data-field="deep" data-reveal style="--i:1">
+          <p>{home.servicesSection.helpText}</p>
+          <Button href={home.servicesSection.helpLink.href} variant="secondary" arrow>{home.servicesSection.helpLink.label}</Button>
+        </div>
+      </div>
+    </section>
+
+    <section id="why" class="chapter" data-field="paper" aria-labelledby="why-heading">
+      <div class="wrap">
+        <SectionHeading id="why-heading">{home.whySection.heading}</SectionHeading>
+        <div class="why">
+          <div class="why__intro" data-reveal>
+            <p class="lead">{home.whySection.lead}</p>
+            <Button href={home.whySection.cta.href} arrow>{home.whySection.cta.label}</Button>
+          </div>
+          <ul role="list" class="why__list">
+            {home.differentiators.map((d, i) => (
+              <li class="why__item" data-reveal style={`--i:${i % 2}`}>
+                {/* The title's full stop is the violet dot from the logo. */}
+                <h3 class="lead why__title">{d.title.replace(/\.$/, '')}<span class="why__stop" aria-hidden="true"></span></h3>
+                <p>{d.body}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="process" class="chapter" data-field="deep" aria-labelledby="process-heading">
+      <div class="wrap">
+        <div class="process__intro">
+          <SectionHeading id="process-heading">{home.processSection.heading}</SectionHeading>
+          <p class="lead process__text" data-reveal style="--i:1">{home.processSection.intro}</p>
+        </div>
+        <ol role="list" class="steps">
+          {home.steps.map((step, i) => <ProcessStep step={step} field={stepFields[i]} index={i} />)}
+        </ol>
+      </div>
+    </section>
+
+    <section id="samples" class="chapter samples" data-field="wash" aria-labelledby="samples-heading">
+      <div class="wrap samples__intro">
+        <SectionHeading id="samples-heading">{home.proofSection.heading}</SectionHeading>
+        <p class="lead measure" data-reveal style="--i:1">{home.proofSection.intro}</p>
+      </div>
+      <ol role="list" class="folders">
+        {home.proof.map((item, i) => <ProofFolder item={item} index={i} field={folders[i % 3].field} tab={folders[i % 3].tab} />)}
+      </ol>
+    </section>
+
+    <CTABand id="diagnostic" {...home.diagnostic} />
+
+    <section id="faq" class="chapter" data-field="paper" aria-labelledby="faq-heading">
+      <div class="wrap faq-layout">
+        <div class="faq-layout__heading">
+          <SectionHeading id="faq-heading">{home.faqSection.heading}</SectionHeading>
+        </div>
+        <div class="faq-layout__list">
+          {/* Island: open/close state, aria-expanded and one-open-at-a-time need script. client:visible because it
+              sits far below the fold; the 300px margin hydrates it just before it scrolls into view. */}
+          <FAQ client:visible={{ rootMargin: '300px' }} items={home.faqs} />
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="chapter" data-field="lavender" aria-labelledby="contact-heading">
+      <div class="wrap">
+        <div class="coupon" data-field="primary">
+          <div class="coupon__intro" data-reveal>
+            <h2 id="contact-heading" class="head coupon__heading">{home.contactSection.heading}</h2>
+            <p>{home.contactSection.body}</p>
+            <p class="coupon__direct">
+              Prefer to talk now? <a class="link" href={contact.whatsapp} target="_blank" rel="noopener noreferrer">WhatsApp us<span class="sr-only"> (opens in a new tab)</span></a> or call <a class="link" href={contact.phoneHref}>{contact.phoneDisplay}</a>.
+            </p>
+          </div>
+          <div class="coupon__form" data-reveal style="--i:1">
+            {/* Island: client-side validation, error and success states and the submit request need script.
+                client:visible because the form is the last section before the footer. */}
+            <ContactForm
+              client:visible={{ rootMargin: '300px' }}
+              services={serviceOptions}
+              submitLabel={home.contactSection.submitLabel}
+              successHeading={home.contactSection.successHeading}
+              successBody={home.contactSection.successBody}
+              privacyHref="/privacy"
+              fallback={{ email: contact.email, whatsapp: contact.whatsapp, phoneDisplay: contact.phoneDisplay }}
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  /* Hero: a little space under the header before the mosaic */
+  .hero { padding-top: clamp(var(--space-3), 1.6vw, var(--space-6)); }
+  .hero__copy { display: grid; gap: var(--space-6); padding-block: var(--space-8) var(--space-12); }
+  .hero__title .line { display: block; overflow: hidden; padding-bottom: 0.1em; margin-bottom: -0.1em; }
+  .hero__title .line > span { display: block; white-space: nowrap; }
+  .hero__aside { display: grid; gap: var(--space-6); }
+  .hero__lead { max-width: 40ch; font-size: var(--step-body); }
+  @media (min-width: 48em) { .hero__lead { font-size: var(--step-lead); } }
+  .hero__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__title .line > span { animation: line-up 900ms var(--ease-out) both; animation-delay: calc(var(--i) * 110ms + 100ms); }
+    .hero__aside { animation: rise var(--t-reveal) var(--ease-out) 350ms both; }
+  }
+  @keyframes line-up { from { transform: translateY(105%); } }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } }
+  @media (min-width: 64em) {
+    .hero__copy { padding-block: var(--space-12) var(--space-16); }
+    .hero__aside { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--space-6); align-items: end; }
+    .hero__lead { grid-column: 1 / 7; }
+    .hero__actions { grid-column: 7 / 13; justify-content: flex-end; }
+  }
+
+  /* Services: a mosaic of unlike tiles */
+  .services { display: grid; gap: var(--tile-gap); grid-template-columns: minmax(0, 1fr); }
+  .services > :global(*) { min-height: 9rem; }
+  .tile { display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-6); }
+  .services__head { justify-content: flex-end; min-height: 12rem; }
+  .audience { display: grid; gap: var(--space-1); font-size: var(--step-lead); line-height: 1.3; }
+  .audience__link { margin-top: auto; align-self: flex-start; min-height: 1.5rem; }
+  .services__help { justify-content: space-between; }
+  .services__help p { font-size: var(--step-lead); line-height: 1.3; max-width: 26ch; }
+  .services__help :global(.btn) { align-self: flex-start; }
+  @media (min-width: 48em) {
+    .services {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-template-areas: 'head head head head head head' 'srch srch srch srch srch srch' 'bot bot bot bot autm autm' 'aud aud web web web web' 'help help help help help help';
+    }
+  }
+  @media (min-width: 64em) {
+    .services {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      grid-auto-rows: minmax(6rem, auto);
+      grid-template-areas:
+        'head head head head head head srch srch srch srch srch srch'
+        'head head head head head head srch srch srch srch srch srch'
+        'head head head head head head srch srch srch srch srch srch'
+        'bot  bot  bot  bot  bot  bot  srch srch srch srch srch srch'
+        'bot  bot  bot  bot  bot  bot  srch srch srch srch srch srch'
+        'bot  bot  bot  bot  bot  bot  aud  aud  aud  autm autm autm'
+        'web  web  web  help help help aud  aud  aud  autm autm autm'
+        'web  web  web  help help help aud  aud  aud  autm autm autm';
+    }
+    .services > :global(*) { min-height: 0; }
+  }
+  @media (min-width: 48em) {
+    .services__head { grid-area: head; }
+    .services > :global(:nth-child(2)) { grid-area: srch; }
+    .services > :global(:nth-child(3)) { grid-area: bot; }
+    .services > :global(:nth-child(4)) { grid-area: autm; }
+    .services > :global(:nth-child(5)) { grid-area: web; }
+    .services__audience { grid-area: aud; }
+    .services__help { grid-area: help; }
+  }
+
+  /* Why: the case on the left, four differentiators as a 2×2 list of headed statements on the right */
+  .why { display: grid; gap: var(--space-12); margin-top: var(--space-10); }
+  .why__intro {
+    display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; gap: var(--space-8);
+    padding: var(--space-6); background: var(--brand-wash);
+  }
+  .why__intro .lead { max-width: 28ch; font-weight: var(--weight-strong); }
+  .why__list { display: grid; gap: var(--space-10); }
+  .why__item { display: grid; gap: var(--space-3); align-content: start; }
+  .why__title { font-weight: var(--weight-display); letter-spacing: -0.02em; line-height: 1.15; max-width: 20ch; }
+  .why__item p { max-width: 40ch; }
+  .why__stop { display: inline-block; width: 0.3em; height: 0.3em; margin-left: 0.06em; border-radius: 50%; background: var(--brand-violet); }
+  @media (min-width: 48em) {
+    .why__list { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-10); row-gap: var(--space-12); }
+  }
+  @media (min-width: 64em) {
+    .why { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--space-6); margin-top: var(--space-16); }
+    .why__intro { grid-column: 1 / 5; padding: var(--space-10); }
+    .why__list { grid-column: 6 / 13; column-gap: var(--space-12); row-gap: var(--space-16); padding-block: var(--space-4); }
+  }
+
+  /* Process */
+  .process__intro { display: grid; gap: var(--space-6); margin-bottom: var(--space-12); }
+  .process__text { max-width: 36ch; }
+  .steps { display: grid; }
+  @media (min-width: 64em) {
+    .process__intro { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--space-6); align-items: end; margin-bottom: var(--space-16); }
+    .process__intro > :global(:first-child) { grid-column: 1 / 8; }
+    .process__text { grid-column: 8 / 13; }
+    .steps { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  /* With a mouse the stages become a horizontal accordion (see ProcessStep). */
+  @media (min-width: 64em) and (hover: hover) { .steps { display: flex; } }
+
+  /* Samples */
+  .samples { padding-bottom: 0; }
+  .samples__intro { display: grid; gap: var(--space-6); margin-bottom: var(--space-12); }
+  .folders { padding-bottom: var(--space-2); }
+
+  /* FAQ */
+  .faq-layout { display: grid; gap: var(--space-10); }
+  @media (min-width: 64em) {
+    .faq-layout { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--space-6); align-items: start; }
+    .faq-layout__heading { grid-column: 1 / 7; position: sticky; top: calc(var(--header-h) + var(--space-8)); }
+    .faq-layout__list { grid-column: 7 / 13; }
+  }
+
+  /* Contact: the form as a coupon to cut out. Notches sit on the perforation: horizontal on phones, vertical from 1024px. */
+  .coupon { position: relative; display: grid; }
+  .coupon__intro, .coupon__form { padding: var(--space-8) var(--space-5); }
+  .coupon__intro { display: grid; gap: var(--space-4); align-content: start; }
+  .coupon__heading { font-weight: var(--weight-display); max-width: 12ch; }
+  .coupon__direct { color: var(--brand-wash); }
+  .coupon__form { position: relative; border-top: 5px dotted var(--brand-lavender); }
+  .coupon__form::before, .coupon__form::after, .coupon::before, .coupon::after {
+    content: ''; position: absolute; width: 1.75rem; height: 1.75rem; border-radius: 50%; background: var(--brand-lavender);
+  }
+  .coupon__form::before, .coupon__form::after { top: -2.5px; translate: 0 -50%; }
+  .coupon__form::before { left: -0.875rem; }
+  .coupon__form::after { right: -0.875rem; }
+  .coupon::before, .coupon::after { display: none; }
+  @media (min-width: 64em) {
+    .coupon { grid-template-columns: 46fr 54fr; margin-inline: calc(100% / 12); }
+    .coupon__intro, .coupon__form { padding: var(--space-12); }
+    .coupon__intro { align-content: space-between; }
+    .coupon__form { border-top: 0; border-left: 5px dotted var(--brand-lavender); }
+    .coupon__form::before, .coupon__form::after { display: none; }
+    .coupon::before, .coupon::after { display: block; left: 46%; translate: -50% 0; }
+    .coupon::before { top: -0.875rem; }
+    .coupon::after { bottom: -0.875rem; }
+  }
+</style>

@@ -1,0 +1,17 @@
+---
+// Chapter heading: the same display size and left edge in every chapter, so the system holds as colours change.
+interface Props {
+  id: string;
+  level?: 2 | 3;
+  size?: 'display' | 'head';
+  class?: string;
+}
+const { id, level = 2, size = 'display', class: className } = Astro.props;
+const Tag = `h${level}` as 'h2' | 'h3';
+---
+
+<Tag id={id} class:list={['section-heading', size, className]} data-reveal><slot /></Tag>
+
+<style>
+  .section-heading { max-width: 16ch; }
+</style>

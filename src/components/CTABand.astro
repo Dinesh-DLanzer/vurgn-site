@@ -1,0 +1,50 @@
+---
+// The whole band is one link: a single verb set huge. Field and word swap colours on hover and focus.
+interface Props { id: string; heading: string; body: string; word: string; href: string; linkLabel: string }
+const { id, heading, body, word, href, linkLabel } = Astro.props;
+---
+
+<section class="band" data-field="primary" aria-labelledby={`${id}-heading`}>
+  <div class="wrap band__inner">
+    <div class="band__top">
+      <div class="band__text" data-reveal>
+        <h2 id={`${id}-heading`} class="lead band__heading">{heading}</h2>
+        <p class="band__body">{body}</p>
+      </div>
+      <svg class="band__arrow" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 36 36 12M15 12h21v21" />
+      </svg>
+    </div>
+    <a class="band__link" href={href} aria-label={linkLabel}>
+      <span class="band__word" aria-hidden="true">{word}</span>
+    </a>
+  </div>
+</section>
+
+<style>
+  .band { position: relative; transition: none; }
+  .band__inner { display: flex; flex-direction: column; justify-content: space-between; gap: var(--space-12); min-height: 46svh; padding-block: var(--space-8) var(--space-6); }
+  .band__top { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-6); }
+  .band__text { max-width: 40ch; display: grid; gap: var(--space-2); }
+  .band__heading { font-weight: var(--weight-display); }
+  .band__arrow { width: 2rem; height: 2rem; flex: none; }
+  .band__link { color: inherit; text-decoration: none; }
+  .band__link::after { content: ''; position: absolute; inset: 0; }
+  .band__word {
+    display: block;
+    font-size: clamp(5.5rem, 33vw, 30rem);
+    font-weight: var(--weight-display);
+    line-height: 0.78;
+    letter-spacing: -0.06em;
+    margin-left: -0.05em;
+  }
+  /* Colours swap instantly: the band answers the pointer like a button. */
+  .band:has(.band__link:hover), .band:has(.band__link:focus-visible) { background: var(--n-0); color: var(--brand-primary); }
+  .band:has(.band__link:focus-visible) { outline: 4px solid var(--brand-deep); outline-offset: -8px; }
+  .band__link:focus-visible { outline: none; }
+  .band:has(.band__link:active) .band__word { transform: translateY(2px); }
+  @media (min-width: 48em) {
+    .band__inner { min-height: 60svh; padding-block: var(--space-12) var(--space-6); }
+    .band__arrow { width: 3rem; height: 3rem; }
+  }
+</style>

@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.astro/
+.env
+.taste-skill/inspect/
+reports/*.json
+.DS_Store

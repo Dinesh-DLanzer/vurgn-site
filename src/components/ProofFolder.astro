@@ -1,0 +1,65 @@
+---
+// One proof item filed as a folder band. Built for sample deliverables now; a real case study uses the same
+// shape with isExample: false and a link, so the section swaps without component changes.
+import { Picture } from 'astro:assets';
+import type { ProofItem } from '../content/home';
+
+interface Props { item: ProofItem; index: number; field: 'paper' | 'lavender' | 'deep'; tab: 'primary' | 'deep' | 'violet' }
+const { item, index, field, tab } = Astro.props;
+const headingId = `proof-${item._key}`;
+---
+
+<li class="folder" style={`--i:${index}`}>
+  <article data-field={field} class="folder__band" aria-labelledby={headingId}>
+    <div class="folder__strip">
+      <h3 id={headingId} class="folder__tab lead" data-field={tab}>{item.title}</h3>
+      <p class="folder__category small">{item.category}</p>
+    </div>
+    <div class="folder__body">
+      <figure class="folder__figure" data-reveal="scale">
+        <Picture
+          src={item.image}
+          alt={item.imageAlt}
+          formats={['avif', 'webp']}
+          widths={[480, 800, 1200, 1600]}
+          sizes="(min-width: 64em) 52vw, 100vw"
+          loading="lazy"
+          class="folder__img"
+        />
+        {item.isExample && <figcaption class="small folder__label">Example with made-up data. Not a client result.</figcaption>}
+      </figure>
+      <div class="folder__text" data-reveal>
+        <p>{item.description}</p>
+        {item.link && <a class="link" href={item.link.href}>{item.link.label}</a>}
+      </div>
+    </div>
+  </article>
+</li>
+
+<style>
+  .folder { --tab-h: 2.75rem; padding-top: var(--tab-h); }
+  .folder__band { position: relative; padding: var(--space-6) var(--gutter) var(--space-10); }
+  .folder__strip { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-4); }
+  .folder__tab {
+    position: absolute; left: 0; bottom: 100%;
+    display: flex; align-items: center; height: var(--tab-h); padding: 0 var(--space-10) 0 var(--gutter);
+    font-weight: var(--weight-display); white-space: nowrap;
+    clip-path: polygon(0 0, calc(100% - var(--tab-h)) 0, 100% 100%, 0 100%);
+  }
+  .folder__category { margin-left: auto; color: var(--field-soft); }
+  .folder__body { display: grid; gap: var(--space-6); margin-top: var(--space-4); }
+  .folder__figure { display: grid; gap: var(--space-2); }
+  .folder__img { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; }
+  .folder__label { color: var(--field-ink); font-weight: var(--weight-strong); }
+  .folder__text { display: grid; gap: var(--space-4); align-content: start; max-width: 40ch; }
+
+  @media (min-width: 64em) {
+    /* Bands pile up like filed folders as the page scrolls. */
+    .folder { position: sticky; top: calc(var(--header-h) + var(--i) * 4rem); }
+    .folder__band { min-height: calc(80svh - var(--i) * 4rem); padding-top: var(--space-4); }
+    .folder__body { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--space-6); margin-top: var(--space-6); }
+    .folder__figure { grid-column: 1 / 8; }
+    .folder__text { grid-column: 9 / 13; font-size: var(--step-lead); line-height: 1.35; }
+    .folder__tab { min-width: 20rem; }
+  }
+</style>

@@ -1,0 +1,175 @@
+---
+// Hero masthead: a gutterless mosaic of flat brand-colour tiles and drawn tiles. The idea: the customer's
+// question mark resolves into the full stop from the Vurgn. logo. Drawn in CSS/SVG; no photographs.
+interface Props { label: string }
+const { label } = Astro.props;
+const questions = [
+  'Which clinic near me has same-day appointments?',
+  'Who can set up a WhatsApp booking bot for my restaurant?',
+  'Best property agent for 2BHK rentals in my area?',
+];
+---
+
+<div class="mosaic" role="img" aria-label={label} data-questions={JSON.stringify(questions)}>
+  <div class="t t--primary"></div>
+  <div class="t t--chat">
+    <p class="bubble bubble--q">
+      {/* Invisible copies of every question size the bubble, so typing never moves the layout. */}
+      {questions.map((q) => <span class="ghost">{q}</span>)}
+      <span class="typed">{questions[0]}</span>
+    </p>
+    <p class="bubble bubble--a">I’d recommend <b>your business</b><span class="stop"></span></p>
+  </div>
+  <div class="t t--question"><span>?</span></div>
+  <div class="t t--dot"><span class="disc"></span></div>
+  <div class="t t--wash"></div>
+  <div class="t t--search">
+    <span class="search">
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="10" cy="10" r="6" /><path d="m15 15 6 6" /></svg>
+      physio near me
+    </span>
+  </div>
+  <div class="t t--flow">
+    <span class="chip flow-step">New enquiry</span><span class="joint joint--mid flow-step"></span><span class="chip chip--mid flow-step">Replied</span><span class="joint flow-step"></span><span class="chip chip--end flow-step">Booked</span>
+  </div>
+  <div class="t t--lavender"></div>
+</div>
+
+<script>
+  // Types each customer question, then shows the answer and the enquiry moving to a booking, one step at a time.
+  // Pauses while the hero is off screen or the tab is hidden. Reduced motion keeps the static first frame.
+  const root = document.querySelector<HTMLElement>('.mosaic');
+  if (root && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const questions: string[] = JSON.parse(root.dataset.questions ?? '[]');
+    const typed = root.querySelector<HTMLElement>('.typed')!;
+    const answer = root.querySelector<HTMLElement>('.bubble--a')!;
+    const steps = [...root.querySelectorAll<HTMLElement>('.flow-step')];
+    const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+    let inView = true;
+    new IntersectionObserver(([entry]) => (inView = entry.isIntersecting)).observe(root);
+    root.classList.add('is-live');
+
+    (async () => {
+      for (let i = 0; ; i = (i + 1) % questions.length) {
+        while (!inView || document.hidden) await wait(500);
+        typed.textContent = '';
+        typed.classList.add('is-typing');
+        for (const ch of questions[i]) {
+          typed.textContent += ch;
+          await wait(38);
+        }
+        typed.classList.remove('is-typing');
+        await wait(300);
+        answer.classList.add('is-on');
+        for (const step of steps) {
+          await wait(450);
+          step.classList.add('is-on');
+        }
+        await wait(2600);
+        answer.classList.remove('is-on');
+        steps.forEach((step) => step.classList.remove('is-on'));
+        await wait(600);
+      }
+    })();
+  }
+</script>
+
+<style>
+  .mosaic {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    height: clamp(14rem, 30svh, 17rem);
+    font-size: var(--step-small);
+    line-height: 1.3;
+  }
+  .t { position: relative; overflow: hidden; min-width: 0; }
+  .t--primary { background: var(--brand-primary); }
+  .t--wash { background: var(--brand-wash); }
+  .t--lavender { background: var(--brand-lavender); }
+  .t--primary, .t--wash, .t--lavender, .t--search { display: none; }
+
+  /* The question */
+  .t--question { grid-area: 1 / 1; background: var(--brand-lavender); color: var(--brand-deep); }
+  .t--question span {
+    position: absolute; left: 0.08em; bottom: -0.12em;
+    font-size: clamp(7rem, 18svh, 15rem); font-weight: 700; line-height: 1; letter-spacing: -0.05em;
+  }
+
+  /* The answer: the logo's full stop, sized from the tile's height so it always fits inside it */
+  .t--dot { grid-area: 2 / 3; background: var(--brand-deep); container-type: size; }
+  .disc {
+    position: absolute; left: 18%; bottom: 14%;
+    width: min(62cqh, 64cqw); aspect-ratio: 1; border-radius: 50%; background: var(--brand-violet);
+  }
+
+  /* An AI assistant conversation */
+  .t--chat {
+    grid-area: 1 / 2 / 2 / 4; background: var(--n-0);
+    display: flex; flex-direction: column; justify-content: center; gap: var(--space-2);
+    padding: var(--space-3);
+  }
+  .bubble { padding: var(--space-2) var(--space-3); border-radius: 1rem; max-width: 30ch; }
+  .bubble--q { display: grid; align-self: flex-end; background: var(--brand-wash); border-bottom-right-radius: 0.25rem; }
+  .bubble--q > span { grid-area: 1 / 1; }
+  .ghost { visibility: hidden; }
+  .bubble--a { align-self: flex-start; background: var(--brand-deep); color: var(--n-0); border-bottom-left-radius: 0.25rem; }
+  .stop { display: inline-block; width: 0.42em; height: 0.42em; margin-left: 0.08em; border-radius: 50%; background: var(--brand-violet); }
+
+  /* A local search */
+  .t--search { background: var(--n-0); align-items: center; padding: var(--space-3); }
+  .search {
+    display: flex; align-items: center; gap: var(--space-2); width: 100%;
+    padding: var(--space-2) var(--space-3); border-radius: var(--radius-control);
+    background: var(--brand-wash); color: var(--ink); white-space: nowrap;
+  }
+  .search svg { width: 1.1em; height: 1.1em; flex: none; color: var(--brand-primary); }
+
+  /* An enquiry moving to a booking */
+  .t--flow {
+    grid-area: 2 / 1 / 3 / 3; background: var(--brand-wash);
+    display: flex; align-items: center; padding: var(--space-3);
+  }
+  .chip { flex: none; padding: var(--space-1) var(--space-3); border-radius: var(--radius-control); background: var(--n-0); color: var(--ink); white-space: nowrap; }
+  .chip--mid { background: var(--brand-lavender); }
+  .chip--end { background: var(--brand-primary); color: var(--n-0); }
+  .joint { flex: 1 1 0; min-width: var(--space-2); height: 4px; background: var(--brand-deep); }
+  .chip--mid, .joint--mid { display: none; }
+
+  @media (min-width: 48em) {
+    .mosaic {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      height: clamp(15rem, 34svh, 26rem);
+    }
+    .t--primary, .t--wash, .t--lavender { display: block; }
+    .t--search { display: flex; }
+    .t--primary { grid-area: 1 / 1 / 3 / 2; }
+    .t--chat { grid-area: 1 / 2 / 2 / 4; padding: var(--space-4); }
+    .t--question { grid-area: 1 / 4; }
+    .t--dot { grid-area: 1 / 5; }
+    .t--wash { grid-area: 1 / 6; }
+    .t--search { grid-area: 2 / 2; }
+    .t--flow { grid-area: 2 / 3 / 3 / 5; padding: var(--space-4); }
+    .t--lavender { grid-area: 2 / 5 / 3 / 7; }
+    .chip--mid, .joint--mid { display: block; }
+  }
+  @media (min-width: 80em) { .mosaic { font-size: var(--step-body); } }
+
+  /* Live sequence (script adds .is-live). Without the script, or with reduced motion, the full first frame shows. */
+  @media (prefers-reduced-motion: no-preference) {
+    /* Hidden before the script starts so the first frame does not flash; shown anyway after 3s if it never runs. */
+    :global(.js) .mosaic:not(.is-live) :is(.typed, .bubble--a, .flow-step) { visibility: hidden; animation: show-late 0s 3s forwards; }
+    .is-live .bubble--a { opacity: 0; translate: 0 0.5rem; transition: opacity 300ms ease, translate 400ms var(--ease-out); }
+    .is-live .chip.flow-step { opacity: 0; scale: 0.85; transition: opacity 260ms ease, scale 360ms var(--ease-out); }
+    .is-live .joint.flow-step { scale: 0 1; transform-origin: left; transition: scale 380ms var(--ease-out); }
+    .is-live :is(.bubble--a, .flow-step).is-on { opacity: 1; translate: 0; scale: 1; }
+    .typed.is-typing::after {
+      content: ''; display: inline-block; width: 0.1em; height: 1.1em; margin-left: 0.06em; vertical-align: text-bottom;
+      background: currentColor; animation: caret 0.9s steps(1) infinite;
+    }
+    .disc { animation: land 900ms var(--ease-out) 700ms both; }
+  }
+  @keyframes show-late { to { visibility: visible; } }
+  @keyframes caret { 50% { opacity: 0; } }
+  @keyframes land { from { transform: translateY(-60%) scale(0.6); opacity: 0; } }
+</style>

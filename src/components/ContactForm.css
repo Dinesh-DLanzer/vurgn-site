@@ -1,0 +1,39 @@
+/* The form sits on the primary-colour coupon card: white fields, white labels, light error colour. */
+.contact-form { display: grid; gap: var(--space-5); }
+.field { display: grid; gap: var(--space-2); }
+.field__label { font-weight: var(--weight-strong); }
+.field__optional, .field__hint { color: var(--brand-wash); font-weight: var(--weight-text); }
+.field__hint { font-size: var(--step-small); margin-top: calc(var(--space-1) * -1); }
+.field input:not([type='checkbox']), .field select {
+  width: 100%; min-height: 3.25rem; padding: var(--space-3) var(--space-4);
+  background: var(--n-0); color: var(--ink);
+  border: 3px solid var(--n-0); border-radius: var(--radius-surface);
+  transition: border-color var(--t-hover) ease;
+}
+.field select { appearance: none; padding-right: var(--space-10); cursor: pointer; }
+.field__select { position: relative; }
+.field__select svg { position: absolute; right: var(--space-4); top: 50%; translate: 0 -50%; pointer-events: none; color: var(--ink); }
+.field input:hover, .field select:hover { border-color: var(--brand-lavender); }
+.field input:focus-visible, .field select:focus-visible { outline: 3px solid var(--brand-lavender); outline-offset: 2px; border-color: var(--brand-deep); }
+.field input:read-only:not([type='checkbox']) { background: var(--n-100); }
+.field input:disabled, .field select:disabled { opacity: 0.6; cursor: not-allowed; }
+.field--error input:not([type='checkbox']), .field--error select { border-color: var(--error-on-dark); }
+.field__error { display: flex; gap: var(--space-2); align-items: flex-start; color: var(--error-on-dark); font-weight: var(--weight-strong); font-size: var(--step-small); }
+.field__error svg { flex: none; margin-top: 0.1em; }
+
+.field--check .field__check-row { display: flex; gap: var(--space-3); align-items: flex-start; }
+.field--check input { flex: none; width: 1.5rem; height: 1.5rem; margin-top: 0.1em; accent-color: var(--brand-lavender); cursor: pointer; }
+.field--check input:focus-visible { outline: 3px solid var(--brand-lavender); outline-offset: 3px; }
+.field--check label { cursor: pointer; }
+.field--check .link { color: var(--n-0); }
+
+.form-alert { padding: var(--space-3) var(--space-4); background: var(--brand-deep); color: var(--n-0); font-weight: var(--weight-strong); }
+.form-alert--block { display: grid; gap: var(--space-2); font-weight: var(--weight-text); }
+.form-alert .link { color: var(--n-0); }
+.contact-form__submit { width: 100%; min-height: 3.5rem; font-size: var(--step-body); }
+.contact-form__submit[aria-busy='true'] { opacity: 0.85; }
+
+.form-success { display: grid; gap: var(--space-3); align-content: start; color: var(--n-0); }
+.form-success svg { color: var(--success-on-dark); }
+.form-success h3 { font-weight: var(--weight-display); }
+.form-success h3:focus { outline: none; }

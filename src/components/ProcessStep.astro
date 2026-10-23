@@ -1,0 +1,63 @@
+---
+// One stage of the process as a tinted panel; order is carried by colour (dark to light), not by numbers.
+// With a mouse from 1024px the stages form a horizontal accordion: slivers with vertical names, and the
+// hovered or focused stage opens. Touch screens and phones show every stage open. No JavaScript.
+import type { Step } from '../content/home';
+
+interface Props { step: Step; field: 'primary' | 'violet' | 'lavender' | 'wash'; index: number }
+const { step, field, index } = Astro.props;
+---
+
+<li class="step" data-field={field} data-reveal style={`--i:${index}`} tabindex="0">
+  <span class="step__label" aria-hidden="true">{step.title}</span>
+  <div class="step__content">
+    <h3 class="head step__title">{step.title}</h3>
+    <p class="step__body">{step.body}</p>
+  </div>
+</li>
+
+<style>
+  .step { display: flex; padding: var(--space-6); min-height: 13rem; }
+  .step:focus-visible { outline-offset: -4px; }
+  .step__label { display: none; }
+  .step__content { flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: var(--space-8); }
+  .step__body { max-width: 34ch; }
+  @media (min-width: 64em) {
+    .step { min-height: 30rem; padding: var(--space-8); }
+  }
+
+  @media (min-width: 64em) and (hover: hover) {
+    .step {
+      position: relative; overflow: hidden; flex: 1 1 0; min-width: 0; height: 30rem; padding: 0;
+      transition: flex-grow 450ms var(--ease-in-out);
+    }
+    .step__label {
+      display: block; position: absolute; left: var(--space-8); bottom: var(--space-8);
+      writing-mode: vertical-rl; rotate: 180deg; white-space: nowrap;
+      font-size: var(--step-head); font-weight: var(--weight-display); letter-spacing: -0.03em; line-height: 1;
+      transition: opacity 200ms ease 200ms;
+    }
+    /* Fixed width so the text never reflows while the panel widens. */
+    /* Closed: clipped (still read by screen readers) and faded; opens with a wipe from the left. */
+    .step__content {
+      position: absolute; inset: var(--space-8) auto var(--space-8) var(--space-8); width: 24rem;
+      clip-path: inset(0 100% 0 0); transition: clip-path 200ms var(--ease-out);
+    }
+    .step__content > * { opacity: 0; transition: opacity 160ms ease; }
+
+    .step:is(:hover, :focus-within),
+    :global(.steps:not(:has(.step:hover, .step:focus-within))) .step:first-child { flex-grow: 3.2; }
+
+    .step:is(:hover, :focus-within) .step__content,
+    :global(.steps:not(:has(.step:hover, .step:focus-within))) .step:first-child .step__content { clip-path: inset(0); transition: clip-path 520ms var(--ease-out) 120ms; }
+
+    .step:is(:hover, :focus-within) .step__content > *,
+    :global(.steps:not(:has(.step:hover, .step:focus-within))) .step:first-child .step__content > * { opacity: 1; transition: opacity 260ms ease 180ms; }
+
+    .step:is(:hover, :focus-within) .step__label,
+    :global(.steps:not(:has(.step:hover, .step:focus-within))) .step:first-child .step__label { opacity: 0; transition: opacity 120ms ease; }
+  }
+  @media (min-width: 64em) and (hover: hover) and (prefers-reduced-motion: reduce) {
+    .step, .step__label, .step__content, .step__content > * { transition: none !important; }
+  }
+</style>

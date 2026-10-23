@@ -1,0 +1,96 @@
+---
+// A footer of tiles. Real contact details only; no postal address until the client confirms one.
+import { Image } from 'astro:assets';
+import logo from '../assets/vurgn-logo.png';
+import { nav, consultation, contact } from '../content/home';
+---
+
+<footer class="footer" data-field="deep">
+  <div class="board">
+    <div class="tile tile--statement" data-field="wash" data-reveal style="--i:0">
+      <p class="lead">AI search and automation for growing businesses.</p>
+      <div class="small legal">
+        <p>© {new Date().getFullYear()} Vurgn</p>
+        <ul role="list" class="legal__links">
+          <li><a class="link" href="/privacy">Privacy policy</a></li>
+          <li><a class="link" href="/terms">Terms</a></li>
+        </ul>
+      </div>
+    </div>
+    <nav class="tile tile--nav" data-field="lavender" data-reveal style="--i:1" aria-label="Footer">
+      <ul role="list">
+        {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="tile tile--reach" data-field="violet" data-reveal style="--i:2">
+      <ul role="list">
+        <li><a href={contact.phoneHref}>{contact.phoneDisplay}</a></li>
+        <li><a href={contact.whatsapp} target="_blank" rel="noopener noreferrer">WhatsApp<span class="sr-only"> (opens in a new tab)</span></a></li>
+        <li><a href={contact.instagram} target="_blank" rel="noopener noreferrer">Instagram {contact.instagramHandle}<span class="sr-only"> (opens in a new tab)</span></a></li>
+      </ul>
+    </div>
+    <div class="tile tile--email" data-field="paper" data-reveal style="--i:0">
+      <p class="small">Email us</p>
+      <a class="email" href={`mailto:${contact.email}`}>{contact.email}</a>
+    </div>
+    <div class="tile tile--mark" data-field="paper" data-reveal style="--i:1">
+      <Image src={logo} alt="Vurgn" widths={[400, 580]} sizes="(min-width: 64em) 36vw, 70vw" class="mark" loading="lazy" />
+    </div>
+    <div class="tile tile--invite" data-field="primary" data-reveal style="--i:2">
+      <a class="invite" href={consultation.href}>
+        <span class="head">{consultation.label}</span>
+        <svg viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 36 36 12M15 12h21v21" /></svg>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer { padding: var(--space-2); }
+  .board { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--tile-gap); }
+  .tile { position: relative; display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-5); min-height: 10rem; }
+  .tile a:not(.link) { color: inherit; text-decoration-thickness: 0.08em; text-underline-offset: 0.25em; }
+  .tile ul a { display: inline-flex; align-items: center; min-height: 2rem; text-decoration: none; }
+  .tile ul a:hover { text-decoration: underline; }
+  .tile--statement { justify-content: space-between; }
+  .tile--statement .lead { max-width: 22ch; font-weight: var(--weight-display); }
+  .legal { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-6); }
+  .legal__links { display: flex; gap: var(--space-4); }
+  .legal__links a { min-height: 1.5rem; }
+  .tile--email { justify-content: flex-end; }
+  .email { font-size: var(--step-lead); font-weight: var(--weight-display); letter-spacing: -0.01em; overflow-wrap: anywhere; }
+  .tile--mark { order: -2; align-items: center; justify-content: center; min-height: 10rem; }
+  .mark { width: min(70%, 32rem); mix-blend-mode: multiply; }
+  .tile--invite { order: -1; padding: 0; }
+  .invite { display: flex; flex-direction: column; justify-content: space-between; gap: var(--space-8); height: 100%; padding: var(--space-5); text-decoration: none; transition: background-color var(--t-hover) ease, color var(--t-hover) ease; }
+  .invite .head { max-width: 11ch; font-weight: var(--weight-display); }
+  .invite svg { width: 2.5rem; height: 2.5rem; align-self: flex-end; transition: transform var(--t-hover) var(--ease-out); }
+  .tile--invite .invite:hover { background: var(--n-0); color: var(--brand-primary); }
+  .invite:hover svg { transform: translate(4px, -4px); }
+  .invite:active { transform: scale(0.99); }
+  .invite:focus-visible { outline-offset: -6px; }
+
+  @media (min-width: 48em) {
+    .footer { padding: var(--space-3); }
+    .board { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+    .tile { min-height: 13.75rem; padding: var(--space-6); }
+    .tile--statement { grid-column: 1 / 7; }
+    .tile--nav { grid-column: 7 / 13; }
+    .tile--nav ul { columns: 2; }
+    .tile--reach { grid-column: 1 / 6; }
+    .tile--email { grid-column: 6 / 13; }
+    .tile--mark, .tile--invite { order: 0; min-height: 20rem; }
+    .tile--mark { grid-column: 1 / 9; }
+    .tile--invite { grid-column: 9 / 13; padding: 0; }
+    .invite { padding: var(--space-6); }
+    .invite svg { width: 3rem; height: 3rem; }
+  }
+  @media (min-width: 64em) {
+    .tile--statement { grid-column: 1 / 5; }
+    .tile--nav { grid-column: 5 / 8; }
+    .tile--nav ul { columns: 1; }
+    .tile--reach { grid-column: 8 / 10; justify-content: flex-end; }
+    .tile--email { grid-column: 10 / 13; }
+  }
+</style>
