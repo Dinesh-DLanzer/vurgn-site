@@ -1,6 +1,5 @@
 ---
 import '@fontsource-variable/bricolage-grotesque/wght.css';
-import fontUrl from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2?url';
 import '../styles/global.css';
 
 interface Props {
@@ -25,7 +24,6 @@ const ogImage = new URL('/og/home.png', Astro.site).href;
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <script is:inline>document.documentElement.classList.add('js')</script>
-    <link rel="preload" href={fontUrl} as="font" type="font/woff2" crossorigin />
     <link rel="icon" type="image/png" href={`${base}/favicon.png`} />
     <link rel="apple-touch-icon" href={`${base}/apple-touch-icon.png`} />
     <meta name="theme-color" content="#ffffff" />
